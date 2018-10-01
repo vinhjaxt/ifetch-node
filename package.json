@@ -1,6 +1,6 @@
 {
   "name": "ifetch-node",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "fetch api for node",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,10 @@
   "keywords": [
     "ifetch"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinhjaxt/ifetch-node.git"
+  },
   "author": "vinhjaxt",
   "license": "ISC",
   "dependencies": {
