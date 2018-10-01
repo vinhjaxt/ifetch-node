@@ -1,0 +1,17 @@
+{
+  "name": "ifetch",
+  "version": "1.0.0",
+  "description": "fetch api for node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ifetch"
+  ],
+  "author": "vinhjaxt",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch-npm": "^2.0.2"
+  }
+}
