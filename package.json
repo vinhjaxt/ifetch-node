@@ -1,5 +1,5 @@
 {
-  "name": "ifetch",
+  "name": "ifetch-node",
   "version": "1.0.0",
   "description": "fetch api for node",
   "main": "index.js",
