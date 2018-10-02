@@ -70,6 +70,9 @@ function ifetch (url, options) {
     if (options.data && util.isPlainObject(options.data)) {
       options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
       options.body = util.httpBuildQuery(options.data)
+      if (options.method.toLowerCase() === 'get') {
+        options.method = 'post'
+      }
       delete options['data']
     }
 
