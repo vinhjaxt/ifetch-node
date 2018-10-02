@@ -2,6 +2,10 @@
 
 Nodejs fetch api support: querystring (qs), data of form (data - urlencoded), json
 
+# install
+`npm i -S ifetch-node`
+
+# Example
 ```js
 // firstly run: npm i -S ifetch-node
 
@@ -31,7 +35,7 @@ ifetch('http//echo.opera.com/', {
 
 // POST json data
 ifetch('http://echo.opera.com/', {
-  method: "PUT",
+  method: "POST",
   json: {
     abc: 123
   }
@@ -44,7 +48,7 @@ ifetch('http://echo.opera.com/', {
 })
 
 // POST form-data
-// npm i form-data
+// npm i -S form-data
 const fs = require('fs')
 const FormData = require('form-data')
 const formData = new FormData()
@@ -59,7 +63,7 @@ ifetch('http://echo.opera.com/', {
   json: true
 })
 
-// send json but dont parse response
+// send json but dont parse the response
 ifetch('http://echo.opera.com/', {
   noParseJSON: true,
   method: 'POST',
@@ -108,7 +112,6 @@ const myFecth = ifetch.defaults({
 
 myFecth('/?abc' /* => http://echo.opera.com/?abc */)
 
-// Thanks
 ```
 
 # Default options
@@ -136,3 +139,5 @@ const DEFAULT_OPTIONS = {
   agent: null // http(s).Agent instance, allows custom proxy, certificate etc.
 }
 ```
+
+# Thank you
