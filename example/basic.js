@@ -1,8 +1,3 @@
-# ifetch-node
-
-Nodejs fetch api support: querystring (qs), data of form (data - urlencoded), json
-
-```js
 // firstly run: npm i -S ifetch-node
 
 const ifetch = require('ifetch-node')
@@ -109,30 +104,3 @@ const myFecth = ifetch.defaults({
 myFecth('/?abc' /* => http://echo.opera.com/?abc */)
 
 // Thanks
-```
-
-# Default options
-```js
-const DEFAULT_OPTIONS = {
-  method: 'get',
-  headers: {
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    Pragma: 'no-cache',
-    'Cache-Control': 'no-cache',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
-  },
-  body: null,
-  credentials: true,
-  keepalive: true,
-  cache: 'no-cache',
-  redirect: 'follow', // set to `manual` to extract redirect headers, `error` to reject redirect
-
-  // The following properties are node-fetch-npm extensions
-  follow: 20, // maximum redirect count. 0 to not follow redirect
-  timeout: 10000, // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
-  compress: true, // support gzip/deflate content encoding. false to disable
-  size: 0, // maximum response body size in bytes. 0 to disable
-  agent: null // http(s).Agent instance, allows custom proxy, certificate etc.
-}
-```
