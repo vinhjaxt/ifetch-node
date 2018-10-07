@@ -12,9 +12,6 @@ const DEFAULT_OPTIONS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
   },
   body: null,
-  credentials: true,
-  keepalive: true,
-  cache: 'no-cache',
   redirect: 'follow', // set to `manual` to extract redirect headers, `error` to reject redirect
 
   // The following properties are node-fetch-npm extensions

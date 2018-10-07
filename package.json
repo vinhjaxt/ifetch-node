@@ -1,6 +1,6 @@
 {
   "name": "ifetch-node",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "fetch api for node",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "author": "vinhjaxt",
   "license": "ISC",
   "dependencies": {
-    "node-fetch-npm": "^2.0.2"
+    "node-fetch-npm": "^2.0.2",
+    "query-string": "^6.2.0"
   }
 }
