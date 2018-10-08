@@ -34,17 +34,17 @@ function ifetch (url, options) {
       url = new URL(url)
     }
 
-    let body
-    if (options) {
-      body = options.body
-      options = util.merge({}, DEFAULT_OPTIONS, options)
-    } else {
-      options = util.merge({}, DEFAULT_OPTIONS)
+    if (!options) {
+      options = {}
     }
 
     if (options.qs) {
       util.appendSearchParams(url, options.qs)
       delete options['qs']
+    }
+
+    const genOptions = {
+      headers: {}
     }
 
     let noParseJSON
@@ -56,11 +56,11 @@ function ifetch (url, options) {
     // json data
     let json = false
     if (options.hasOwnProperty('json')) {
-      options.headers['Accept'] = 'application/json'
+      genOptions.headers['Accept'] = 'application/json'
       if (options.method.toLowerCase() !== 'get') {
-        options.headers['Content-Type'] = 'application/json'
-        if (!body) {
-          options.body = JSON.stringify(options.json)
+        if (!options.body) {
+          genOptions.headers['Content-Type'] = 'application/json'
+          genOptions.body = JSON.stringify(options.json)
         }
       }
       delete options['json']
@@ -69,18 +69,19 @@ function ifetch (url, options) {
 
     // url encoded data
     if (options.data && util.isPlainObject(options.data)) {
-      options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-      if (!body) {
-        options.body = util.httpBuildQuery(options.data)
+      genOptions.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      if (!options.body) {
+        genOptions.body = util.httpBuildQuery(options.data)
       }
       if (options.method.toLowerCase() === 'get') {
-        options.method = 'post'
+        genOptions.method = 'post'
       }
       delete options['data']
     }
 
     options.referer = url.href
 
+    options = util.merge({}, DEFAULT_OPTIONS, genOptions, options)
     if (json && !noParseJSON) {
       return fetch(url, options).then(util.parseJSON)
     }
