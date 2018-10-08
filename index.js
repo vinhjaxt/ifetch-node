@@ -57,7 +57,7 @@ function ifetch (url, options) {
     let json = false
     if (options.hasOwnProperty('json')) {
       genOptions.headers['Accept'] = 'application/json'
-      if (options.method.toLowerCase() !== 'get') {
+      if (options.method && (options.method + '').toLowerCase() !== 'get') {
         if (!options.body) {
           genOptions.headers['Content-Type'] = 'application/json'
           genOptions.body = JSON.stringify(options.json)
