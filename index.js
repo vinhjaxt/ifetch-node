@@ -7,6 +7,7 @@ const DEFAULT_OPTIONS = {
   headers: {
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     Pragma: 'no-cache',
+    'Accept-Language': 'en-US,en;q=0.5',
     'Cache-Control': 'no-cache',
     'Upgrade-Insecure-Requests': '1',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
