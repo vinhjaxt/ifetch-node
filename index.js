@@ -74,7 +74,7 @@ function ifetch (url, options) {
       if (!options.body) {
         genOptions.body = util.httpBuildQuery(options.data)
       }
-      if (options.method.toLowerCase() === 'get') {
+      if (!options.method || (options.method + '').toLowerCase() === 'get') {
         genOptions.method = 'post'
       }
       delete options['data']
