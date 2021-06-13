@@ -42,6 +42,11 @@ const DEFAULT_OPTIONS = {
  */
 function ifetch(url, options) {
   try {
+    if (typeof url !== 'string' && !(url instanceof URL)) {
+      options = url
+      url = '/'
+    }
+
     if (!(url instanceof URL)) {
       url = new URL(url)
     }
@@ -85,10 +90,11 @@ function ifetch(url, options) {
       if (!options.body) {
         genOptions.body = util.httpBuildQuery(options.data)
       }
-      if (!options.method || (options.method + '').toLowerCase() === 'get') {
-        genOptions.method = 'post'
-      }
       delete options['data']
+    }
+
+    if (genOptions.body && (!options.method || (options.method + '').toLowerCase() === 'get')) {
+      genOptions.method = 'post'
     }
 
     options.referer = url.href
@@ -113,7 +119,7 @@ function ifetch(url, options) {
  * @param {Object} baseOptions default options
  * @return {Function} fetch function
  */
-ifetch.defaults = function (baseOptions) {
+ifetch.defaults = baseOptions => {
   let baseURL
   if (baseOptions.url) {
     baseURL = baseOptions.url
@@ -134,8 +140,13 @@ ifetch.defaults = function (baseOptions) {
    * @param {String|URL} url
    * @param {Object} [options]
    */
-  return function (url, options) {
+  return (url, options) => {
     // ifetch function
+    if (typeof url !== 'string' && !(url instanceof URL)) {
+      options = url
+      url = '/'
+    }
+
     if (baseURL) {
       url = util.mergeURL(url, baseURL)
     }
