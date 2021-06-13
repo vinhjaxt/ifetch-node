@@ -129,14 +129,13 @@ const DEFAULT_OPTIONS = {
   credentials: true,
   keepalive: true,
   cache: 'no-cache',
-  redirect: 'follow', // set to `manual` to extract redirect headers, `error` to reject redirect
+  redirect: 'manual', // set to `manual` to extract redirect headers, `follow` to follow redirect, `error` to reject redirect
 
-  // The following properties are node-fetch-npm extensions
+  // The following properties are node-fetch extensions
   follow: 20, // maximum redirect count. 0 to not follow redirect
   timeout: 10000, // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
   compress: true, // support gzip/deflate content encoding. false to disable
   size: 0, // maximum response body size in bytes. 0 to disable
-  agent: null // http(s).Agent instance, allows custom proxy, certificate etc.
 }
 ```
 

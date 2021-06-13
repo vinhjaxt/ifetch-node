@@ -1,6 +1,16 @@
 const { URL } = require('url')
-const fetch = require('node-fetch-npm')
+const fetch = require('node-fetch')
 const util = require('./util')
+const HttpAgent = require('agentkeepalive')
+const HttpsAgent = HttpAgent.HttpsAgent
+const defaultAgentOptions = {
+  maxSockets: 100,
+  maxFreeSockets: 10,
+  timeout: 60000, // active socket keepalive for 60 seconds
+  freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+}
+const defaultHttpAgent = new HttpAgent(defaultAgentOptions)
+const defaultHttpsAgent = new HttpsAgent(defaultAgentOptions)
 
 const DEFAULT_OPTIONS = {
   method: 'get',
@@ -13,14 +23,15 @@ const DEFAULT_OPTIONS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
   },
   body: null,
-  redirect: 'follow', // set to `manual` to extract redirect headers, `error` to reject redirect
+  redirect: 'manual', // set to `manual` to extract redirect headers, `follow` to follow redirect, `error` to reject redirect
 
   // The following properties are node-fetch-npm extensions
   follow: 20, // maximum redirect count. 0 to not follow redirect
   timeout: 10000, // req/res timeout in ms, it resets on redirect. 0 to disable (OS limit applies)
   compress: true, // support gzip/deflate content encoding. false to disable
   size: 0, // maximum response body size in bytes. 0 to disable
-  agent: null // http(s).Agent instance, allows custom proxy, certificate etc.
+  httpAgent: defaultHttpAgent, // httpAgent instance, allows custom proxy, certificate etc.
+  httpsAgent: defaultHttpsAgent // httpsAgent instance, allows custom proxy, certificate etc.
 }
 
 /**
@@ -29,7 +40,7 @@ const DEFAULT_OPTIONS = {
  * @param {Object} [options]
  * @return {Promise}
  */
-function ifetch (url, options) {
+function ifetch(url, options) {
   try {
     if (!(url instanceof URL)) {
       url = new URL(url)
@@ -83,6 +94,11 @@ function ifetch (url, options) {
     options.referer = url.href
 
     options = util.merge({}, DEFAULT_OPTIONS, genOptions, options)
+
+    options.agent = url.protocol === 'https:' ? options.httpsAgent : options.httpAgent
+    delete options.httpAgent
+    delete options.httpsAgent
+
     if (json && !noParseJSON) {
       return fetch(url, options).then(util.parseJSON)
     }

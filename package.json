@@ -16,7 +16,8 @@
   "author": "vinhjaxt",
   "license": "ISC",
   "dependencies": {
-    "node-fetch-npm": "^2.0.2",
+    "agentkeepalive": "^4.1.4",
+    "node-fetch": "^2.6.1",
     "query-string": "^6.2.0"
   }
 }

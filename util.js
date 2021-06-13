@@ -1,7 +1,7 @@
 const { URL } = require('url')
 const toString = Object.prototype.toString
 const qs = require('query-string')
-const { Response } = require('node-fetch-npm')
+const { Response } = require('node-fetch')
 
 /**
  * Test if x is plain object
