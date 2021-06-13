@@ -93,7 +93,7 @@ function ifetch(url, options) {
       delete options['data']
     }
 
-    if (genOptions.body && (!options.method || (options.method + '').toLowerCase() === 'get')) {
+    if ((genOptions.body || options.body) && (!options.method || (options.method + '').toLowerCase() === 'get')) {
       genOptions.method = 'post'
     }
 
