@@ -64,7 +64,7 @@ function ifetch(url, options) {
     }
 
     if (options.raw) {
-      if (!(options.raw instanceof Buffer)) options.raw = Buffer.from(options.raw.replace(/\r?\n/g, '\r\n'))
+      if (!(options.raw instanceof Buffer)) options.raw = Buffer.from(options.raw)
       let nextEmptyLineFlag = false
       let requestInvalid = true
       for (let i = 0; i < options.raw.length; i++) {
