@@ -1,6 +1,8 @@
 const { URL } = require('url')
 const fetch = require('node-fetch')
 const util = require('./util')
+const byte0d = Buffer.from('\r')[0]
+const byte0a = Buffer.from('\n')[0]
 const HttpAgent = require('agentkeepalive')
 const HttpsAgent = HttpAgent.HttpsAgent
 const defaultAgentOptions = {
@@ -13,14 +15,14 @@ const defaultHttpAgent = new HttpAgent(defaultAgentOptions)
 const defaultHttpsAgent = new HttpsAgent(defaultAgentOptions)
 
 const DEFAULT_OPTIONS = {
-  method: 'get',
+  method: 'GET',
   headers: {
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    Pragma: 'no-cache',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Cache-Control': 'no-cache',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
+    accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    pragma: 'no-cache',
+    'accept-language': 'en-US,en;q=0.5',
+    'cache-control': 'no-cache',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
   },
   body: null,
   redirect: 'manual', // set to `manual` to extract redirect headers, `follow` to follow redirect, `error` to reject redirect
@@ -42,17 +44,59 @@ const DEFAULT_OPTIONS = {
  */
 function ifetch(url, options) {
   try {
-    if (typeof url !== 'string' && !(url instanceof URL)) {
-      options = url
-      url = '/'
-    }
-
-    if (!(url instanceof URL)) {
+    if (typeof url === 'string') {
       url = new URL(url)
+    } else {
+      throw new Error('URL must be a string')
     }
 
     if (!options) {
       options = {}
+    }
+
+    if (options.headers) {
+      for (let k in options.headers) {
+        const kl = k.toLowerCase()
+        if (k === kl) continue
+        options.headers[kl] = options.headers[k]
+        delete options.headers[k]
+      }
+    }
+
+    if (options.raw) {
+      if (!(options.raw instanceof Buffer)) options.raw = Buffer.from(options.raw.replace(/\r?\n/g, '\r\n'))
+      let nextEmptyLineFlag = false
+      let requestInvalid = true
+      for (let i = 0; i < options.raw.length; i++) {
+        if (options.raw[i] === byte0d) continue
+        if (options.raw[i] === byte0a) {
+          if (nextEmptyLineFlag) {
+            // reach \r\n\r\n
+            requestInvalid = false
+            const rawHeaders = options.raw.slice(0, i - 3)
+            const lines = rawHeaders.toString().split(/\r\n/)
+            const httpLine = /([A-Z]+)\s(.+?)\sHTTP\/[\d\.]+$/.exec(lines.shift())
+            if (!httpLine) throw new Error('Invalid raw request')
+            if (!options.method) options.method = httpLine[1]
+            url = new URL(httpLine[2], url)
+            if (!options.headers) options.headers = {}
+            for (const line of lines) {
+              let idx = line.indexOf(':')
+              if (!~idx) continue
+              const k = line.substr(0, idx).toLowerCase()
+              if (line[idx + 1] === ' ') idx++
+              if (!options.headers[k]) options.headers[k] = line.substr(idx + 1)
+            }
+            options.body = options.raw.slice(i + 1)
+            delete options.headers['content-length']
+            break
+          }
+          nextEmptyLineFlag = true
+        } else {
+          nextEmptyLineFlag = false
+        }
+      }
+      if (requestInvalid) throw new Error('Invalid raw request')
     }
 
     if (options.qs) {
@@ -73,10 +117,10 @@ function ifetch(url, options) {
     // json data
     let json = false
     if (options.hasOwnProperty('json')) {
-      genOptions.headers['Accept'] = 'application/json'
-      if (options.method && (options.method + '').toLowerCase() !== 'get') {
+      genOptions.headers['accept'] = 'application/json'
+      if (options.method && (options.method + '').toUpperCase() !== 'GET') {
         if (!options.body) {
-          genOptions.headers['Content-Type'] = 'application/json'
+          genOptions.headers['content-type'] = 'application/json'
           genOptions.body = JSON.stringify(options.json)
         }
       }
@@ -86,15 +130,15 @@ function ifetch(url, options) {
 
     // url encoded data
     if (options.data && util.isPlainObject(options.data)) {
-      genOptions.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      genOptions.headers['content-type'] = 'application/x-www-form-urlencoded'
       if (!options.body) {
         genOptions.body = util.httpBuildQuery(options.data)
       }
       delete options['data']
     }
 
-    if ((genOptions.body || options.body) && (!options.method || (options.method + '').toLowerCase() === 'get')) {
-      genOptions.method = 'post'
+    if ((genOptions.body || options.body) && (!options.method || (options.method + '').toUpperCase() === 'GET')) {
+      genOptions.method = 'POST'
     }
 
     options.referer = url.href
