@@ -83,7 +83,7 @@ function ifetch(url, options) {
 
     if (options.raw) {
       const [rawHeaders, rawBody] = parseRawRequest(options.raw)
-      const lines = rawHeaders.split(/\r\n/)
+      const lines = rawHeaders.split(/\r?\n/)
       const httpLine = /([A-Z]+)\s(.+?)\sHTTP\/[\d\.]+$/.exec(lines.shift())
       if (!httpLine) throw new Error('Invalid raw request')
       if (!options.method) options.method = httpLine[1]
