@@ -36,6 +36,24 @@ const DEFAULT_OPTIONS = {
   httpsAgent: defaultHttpsAgent // httpsAgent instance, allows custom proxy, certificate etc.
 }
 
+function parseRawRequest(rawRequest) {
+  if (!(rawRequest instanceof Buffer)) rawRequest = Buffer.from(rawRequest)
+  let nextEmptyLineFlag = false
+  for (let i = 0; i < rawRequest.length; i++) {
+    if (rawRequest[i] === byte0d) continue
+    if (rawRequest[i] === byte0a) {
+      if (nextEmptyLineFlag) {
+        // reach \r\n\r\n
+        return [rawRequest.slice(0, i).toString().replace(/[\r\n]+$/, ''), rawRequest.slice(i + 1)]
+      }
+      nextEmptyLineFlag = true
+    } else {
+      nextEmptyLineFlag = false
+    }
+  }
+  throw new Error('Invalid raw request')
+}
+
 /**
  * ifetch - fetch api for node
  * @param {String|URL} url URL
@@ -64,39 +82,23 @@ function ifetch(url, options) {
     }
 
     if (options.raw) {
-      if (!(options.raw instanceof Buffer)) options.raw = Buffer.from(options.raw)
-      let nextEmptyLineFlag = false
-      let requestInvalid = true
-      for (let i = 0; i < options.raw.length; i++) {
-        if (options.raw[i] === byte0d) continue
-        if (options.raw[i] === byte0a) {
-          if (nextEmptyLineFlag) {
-            // reach \r\n\r\n
-            requestInvalid = false
-            const rawHeaders = options.raw.slice(0, i - 3)
-            const lines = rawHeaders.toString().split(/\r\n/)
-            const httpLine = /([A-Z]+)\s(.+?)\sHTTP\/[\d\.]+$/.exec(lines.shift())
-            if (!httpLine) throw new Error('Invalid raw request')
-            if (!options.method) options.method = httpLine[1]
-            url = new URL(httpLine[2], url)
-            if (!options.headers) options.headers = {}
-            for (const line of lines) {
-              let idx = line.indexOf(':')
-              if (!~idx) continue
-              const k = line.substr(0, idx).toLowerCase()
-              if (line[idx + 1] === ' ') idx++
-              if (!options.headers[k]) options.headers[k] = line.substr(idx + 1)
-            }
-            options.body = options.raw.slice(i + 1)
-            delete options.headers['content-length']
-            break
-          }
-          nextEmptyLineFlag = true
-        } else {
-          nextEmptyLineFlag = false
-        }
+      const [rawHeaders, rawBody] = parseRawRequest(options.raw)
+      const lines = rawHeaders.split(/\r\n/)
+      const httpLine = /([A-Z]+)\s(.+?)\sHTTP\/[\d\.]+$/.exec(lines.shift())
+      if (!httpLine) throw new Error('Invalid raw request')
+      if (!options.method) options.method = httpLine[1]
+      url = new URL(httpLine[2], url)
+      if (!options.headers) options.headers = {}
+      for (const line of lines) {
+        let idx = line.indexOf(':')
+        if (!~idx) continue
+        const k = line.substr(0, idx).toLowerCase()
+        if (line[idx + 1] === ' ') idx++
+        if (!options.headers[k]) options.headers[k] = line.substr(idx + 1)
       }
-      if (requestInvalid) throw new Error('Invalid raw request')
+      options.body = rawBody
+      delete options.headers['content-length']
+      delete options.raw
     }
 
     if (options.qs) {
