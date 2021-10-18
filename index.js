@@ -213,4 +213,6 @@ ifetch.defaults = baseOptions => {
   }
 }
 
+ifetch.DEFAULT_OPTIONS = DEFAULT_OPTIONS
+
 exports = module.exports = ifetch
