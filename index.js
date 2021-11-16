@@ -64,8 +64,9 @@ function ifetch(url, options) {
   try {
     if (typeof url === 'string') {
       url = new URL(url)
-    } else {
-      throw new Error('URL must be a string')
+    } else if (!(url instanceof URL)) {
+      console.log(url)
+      throw new Error('URL must be a string or instance of URL')
     }
 
     if (!options) {
