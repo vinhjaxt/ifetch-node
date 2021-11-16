@@ -1,6 +1,6 @@
 {
   "name": "ifetch-node",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "fetch api for node",
   "main": "index.js",
   "keywords": [
