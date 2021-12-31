@@ -97,7 +97,7 @@ function ifetch(url, options) {
         if (line[idx + 1] === ' ') idx++
         if (!options.headers[k]) options.headers[k] = line.substr(idx + 1)
       }
-      options.body = rawBody
+      if (options.method && (options.method + '').toUpperCase() !== 'GET') options.body = rawBody
       delete options.headers['content-length']
       delete options.raw
     }
