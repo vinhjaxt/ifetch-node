@@ -23,6 +23,27 @@ ifetch('http://echo.opera.com/', {
   }
 })
 
+// Raw http request support
+ifetch('http://abc.com', {
+  method: 'POST',
+  raw: `GET /my-courses HTTP/1.1
+Host: abc.com
+Cookie: xxx
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Te: trailers
+Connection: close
+
+`
+})
+
 // POST form urlencoded data
 ifetch('http//echo.opera.com/', {
   method: 'POST',
